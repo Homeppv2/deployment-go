@@ -7,7 +7,7 @@ compose-build:
 
  .PHONY: compose-up
 compose-up:
-	docker-compose -f $(DOCKER_COMPOSE) --env-file ${DOCKER_ENV} up -d
+	docker-compose -f $(DOCKER_COMPOSE) --env-file ${DOCKER_ENV} up
 
  .PHONY: compose-down
 compose-down:

@@ -22,10 +22,8 @@ services:
     container_name: postgres
     image: postgres:15-alpine
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=pass
-    ports:
-      - 5432:5432
+      - POSTGRES_USER=${POSTGRESQL_USER}
+      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
       interval: 10s
@@ -34,42 +32,53 @@ services:
     volumes:
       - ./db/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
       - pgdata:/var/lib/postgresql/data
-  redis:
-    container_name: redis
-    image: docker.io/bitnami/redis:7.0
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-    ports:
-      - '6380:6379'
-    healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-    volumes:
-      - 'redis_data:/bitnami/redis/data'
   api:
     container_name: api
+    environment:
+      - POSTGRESQL_USER=${POSTGRESQL_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+      - POSTGRESQL_HOST=postgres
+      - POSTGRESQL_PORT=${POSTGRESQL_PORT}
+      - POSTGRESQL_BASE=api
+      - API_HOST=api
+      - API_PORT=${API_PORT}
+      - BROKER_PROTOCOL=amqp
+      - BROKER_USERNAME=${RABBIT_USERNAME}
+      - BROKER_PASSWORD=${RABBIT_PASSWORD}
+      - BROKER_HOST=rabbitmq
+      - BROKER_PORT=${RABBIT_PORT}
+
     build:
       context: ./api-go
+    ports:
+      - ${API_HOST_PORT}:${API_PORT}
     depends_on:
       rabbitmq:
         condition: service_healthy
       postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
   aggregator:
     container_name: aggregator
+    hostname: aggregator
+    environment:
+      - AGGREGATOR_HOST=aggregator
+      - AGGREGATOR_PORT=${AGGREGATOR_PORT}
+      - BROKER_PROTOCOL=amqp
+      - BROKER_USERNAME=${RABBIT_USERNAME}
+      - BROKER_PASSWORD=${RABBIT_PASSWORD}
+      - BROKER_HOST=rabbitmq
+      - BROKER_PORT=${RABBIT_PORT}
+      - API_PROTOCOL=http
+      - API_HOST=api
+      - API_PORT=${API_PORT}
     build:
       context: ./aggregator
+    ports:
+      - ${AGGREGATOR_HOST_PORT}:${AGGREGATOR_PORT}
     depends_on:
       rabbitmq:
         condition: service_healthy
       postgres:
-        condition: service_healthy
-      redis:
         condition: service_healthy
   frontend:
     container_name: frontend
