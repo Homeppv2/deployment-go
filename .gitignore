@@ -1,6 +1,6 @@
-aggregator
+aggregator-go
 api-go
 homepp_front
-aggregator/*
+aggregator-go/*
 api-go/*
 homepp_front/*

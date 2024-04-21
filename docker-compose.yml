@@ -58,6 +58,31 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+  savebase:
+    container_name: savebase
+    hostname: savebase
+    environment:
+      - POSTGRESQL_USER=${POSTGRESQL_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+      - POSTGRESQL_HOST=postgres
+      - POSTGRESQL_PORT=${POSTGRESQL_PORT}
+      - POSTGRESQL_BASE=root
+      - API_HOST=api
+      - API_PORT=${API_PORT}
+      - BROKER_PROTOCOL=amqp
+      - BROKER_USERNAME=${RABBIT_USERNAME}
+      - BROKER_PASSWORD=${RABBIT_PASSWORD}
+      - BROKER_HOST=rabbitmq
+      - BROKER_PORT=${RABBIT_PORT}
+    build:
+      context: ./api-go
+      dockerfile: ./internal/basescript/Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
   aggregator-go:
     container_name: aggregator-go
     hostname: aggregator-go
@@ -81,6 +106,7 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+  
   pgadm:
     container_name: pgadmin4_container
     image: dpage/pgadmin4:7
