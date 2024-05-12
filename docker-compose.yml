@@ -83,7 +83,7 @@ services:
       postgres:
         condition: service_healthy
       api:
-        condition: service_healthy
+        condition: service_started
 
   aggregator-go:
     container_name: aggregator-go
