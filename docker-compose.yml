@@ -82,6 +82,8 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+      api:
+        condition: service_healthy
 
   aggregator-go:
     container_name: aggregator-go
@@ -116,7 +118,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
       - "5050:5050"
-      - "80:80"
+      - "1027:80"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     depends_on:
