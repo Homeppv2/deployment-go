@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS users
     id            SERIAL PRIMARY KEY,
     username      TEXT NOT NULL,
     email         TEXT NOT NULL,
-    hash_password TEXT NOT NULL
+    hash_password TEXT NOT NULL,
+    premission INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS controllers 
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS controllers
 
 CREATE TABLE IF NOT EXISTS user_controllers 
 (
+    id INTEGER PRIMARY KEY,
     id_user INTEGER references users(id),
     id_controller INTEGER references controllers(id_controller)
 );
@@ -22,7 +24,7 @@ CREATE TABLE IF NOT EXISTS user_controllers
 CREATE TABLE IF NOT EXISTS messanges 
 (
     id_messange SERIAL PRIMARY KEY,
-    id_controller INTEGER references controllers(id_controller),
+    id_user_controllers INTEGER references user_controllers(id),
     status_controller INTEGER,
     charge_controller INTEGER,
     temperature_MK_controller INTEGER
