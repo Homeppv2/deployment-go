@@ -27,7 +27,8 @@ CREATE TABLE IF NOT EXISTS messanges
     id_user_controllers INTEGER references user_controllers(id),
     status_controller INTEGER,
     charge_controller INTEGER,
-    temperature_MK_controller INTEGER
+    temperature_MK_controller INTEGER,
+    t timestamp 
 );
 
 CREATE TABLE IF NOT EXISTS messanges_controllers_leack
